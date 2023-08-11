@@ -34,6 +34,7 @@ const addContact = async (body) => {
   return body;
 };
 
+
 const removeContact = async (contactId) => {
   let isContact = false;
   const contacts = await fs
