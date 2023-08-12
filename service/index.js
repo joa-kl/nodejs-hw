@@ -10,9 +10,9 @@ const getContactById = async (contactId) => {
     }
 };
 
-const addContact = async (body) => {
+const addContact = async ({ name, email, phone, favorite }) => {
     try {
-        Contacts.create({})
+        Contacts.create({ name, email, phone, favorite })
     } catch (error) {
         return false;
     }
@@ -36,7 +36,6 @@ const updateContact = async (contactId, body) => {
 };
 
 const updateStatusContact = updateContact;
-
 
 module.exports = {
     listContacts,

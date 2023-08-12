@@ -57,9 +57,9 @@ const remove = async (req, res, next) => {
 };
 
 const create = async (req, res, next) => {
-    const { name, email, phone, favorite } = req.body
+    const { name, email, phone} = req.body
     try {
-        const result = await service.addContact({ name, email, phone, favorite })
+        const result = await service.addContact({ name, email, phone })
 
         res.status(201).json({
             status: 'success',

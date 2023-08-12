@@ -13,7 +13,7 @@ mongoose.set("strictQuery", false);
 // app.use(cors())
 
 const connection = mongoose.connect(uriDb, {
-  // useNewUrlParser: true,
+  useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
