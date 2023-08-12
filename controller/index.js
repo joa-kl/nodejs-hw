@@ -58,7 +58,7 @@ const remove = async (req, res, next) => {
 const create = async (req, res, next) => {
     const { name, email, phone, favorite } = req.body
     try {
-        const result = await service.create({ name, email, phone, favorite })
+        const result = await service.addContact({ name, email, phone, favorite })
 
         res.status(201).json({
             status: 'success',
@@ -72,10 +72,10 @@ const create = async (req, res, next) => {
 }
 
 const update = async (req, res, next) => {
-    const { id } = req.params
+    const { contactId } = req.params
     const { name, email, phone, favorite } = req.body
     try {
-        const result = await service.update(id, { name, email, phone, favorite })
+        const result = await service.updateContact(contactId, { name, email, phone, favorite })
         if (result) {
             res.json({
                 status: 'success',
@@ -86,7 +86,7 @@ const update = async (req, res, next) => {
             res.status(404).json({
                 status: 'error',
                 code: 404,
-                message: `Not found task id: ${id}`,
+                message: `Not found contact id: ${contactId}`,
                 data: 'Not Found',
             })
         }
@@ -97,11 +97,11 @@ const update = async (req, res, next) => {
 }
 
 const updateStatus = async (req, res, next) => {
-    const { id } = req.params
+    const { contactId } = req.params
     const { isFavourite = false } = req.body
 
     try {
-        const result = await service.updateStatus(id, { isFavourite })
+        const result = await service.updateStatusContact(contactId, { isFavourite })
         if (result) {
             res.json({
                 status: 'success',
@@ -112,7 +112,7 @@ const updateStatus = async (req, res, next) => {
             res.status(404).json({
                 status: 'error',
                 code: 404,
-                message: `Not found task id: ${id}`,
+                message: `Not found contact id: ${contactId}`,
                 data: 'Not Found',
             })
         }
