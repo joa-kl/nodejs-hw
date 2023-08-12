@@ -118,7 +118,7 @@ const updateStatus = async (req, res, next) => {
             })
         }
     } catch (e) {
-        console.error(e)
+        console.error(e.message = "missing field favorite");
         next(e)
     }
 }
