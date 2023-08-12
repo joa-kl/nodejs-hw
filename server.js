@@ -12,10 +12,6 @@ mongoose.set("strictQuery", false);
 // const cors = require('cors')
 // app.use(cors())
 
-
-
-
-
 const connection = mongoose.connect(uriDb, {
   // useNewUrlParser: true,
   useUnifiedTopology: true,
