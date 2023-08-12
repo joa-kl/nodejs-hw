@@ -1,10 +1,10 @@
-const Contact = require('./schemas/contact');
+const Contacts = require('./schemas/contact');
 
-const listContacts = async () => await Contact.find();
+const listContacts = async () => await Contacts.find();
 
 const getContactById = async (contactId) => {
     try {
-        return Contact.findOne({ _id: contactId });
+        return Contacts.findOne({ _id: contactId });
     } catch (error) {
         return false;
     }
@@ -12,7 +12,7 @@ const getContactById = async (contactId) => {
 
 const addContact = async (body) => {
     try {
-        Contact.create({})
+        Contacts.create({})
     } catch (error) {
         return false;
     }
@@ -21,7 +21,7 @@ const addContact = async (body) => {
 
 const removeContact = async (contactId) => {
     try {
-        Contact.findByIdAndRemove({_id: contactId})
+        Contacts.findByIdAndRemove({_id: contactId})
     } catch (error) {
         return false;
     }
@@ -29,7 +29,7 @@ const removeContact = async (contactId) => {
 
 const updateContact = async (contactId, body) => {
     try {
-        Contact.findByIdAndUpdate({ _id: contactId }, body, { new: true })
+        Contacts.findByIdAndUpdate({ _id: contactId }, body, { new: true })
     } catch (error) {
         return false;
     }
