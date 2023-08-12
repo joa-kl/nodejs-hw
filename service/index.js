@@ -21,7 +21,7 @@ const addContact = async (body) => {
 
 const removeContact = async (contactId) => {
     try {
-        Contacts.findByIdAndRemove({_id: contactId})
+        Contacts.findByIdAndRemove({ _id: contactId });
     } catch (error) {
         return false;
     }
