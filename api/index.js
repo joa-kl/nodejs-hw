@@ -8,7 +8,7 @@ router.get('/:contactId', controller.getContact);
 
 router.post('/', controller.create);
 
-router.delete('/:contactId', controller.delete);
+router.delete('/:contactId', controller.remove);
 
 router.put('/:contactId', controller.update);
 
