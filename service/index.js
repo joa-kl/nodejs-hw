@@ -1,6 +1,6 @@
 const Contact = require('./schemas/contact');
 
-const listContacts = async() => {
+const getAllContacts = async() => {
     return Contact.find()
 }
 
@@ -40,7 +40,7 @@ const updateContact = async (contactId, body) => {
 const updateStatusContact = updateContact;
 
 module.exports = {
-    listContacts,
+    getAllContacts,
     getContactById,
     removeContact,
     addContact,
