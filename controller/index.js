@@ -6,7 +6,7 @@ const getAll = async (req, res, next) => {
         res.json({
             status: 'success',
             code: 200,
-            data: {contacts: results},
+            data: { results },
         });
     } catch (error) {
         console.error(error);
