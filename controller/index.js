@@ -2,15 +2,15 @@ const service = require('../service/index');
 
 const getAll =  async (req, res, next) => {
     // try {
-        const results = await service.getAllContacts();
+        const results = await service.getAllContacts()
         res.json({
             status: 'success',
             code: 200,
             data: { results },
-        });
+        })
     // } catch (error) {
     //     console.error(error);
-    //     // next(error);
+    //     next(error);
     // }
 }
 
