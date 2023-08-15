@@ -169,7 +169,7 @@ const updateStatus = async (req, res, next) => {
             res.json({
                 status: 'success',
                 code: 200,
-                data: { contact: result },
+                data: { result },
             })
         } else {
             res.status(404).json({
