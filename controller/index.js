@@ -1,4 +1,25 @@
+const Joi = require('joi');
 const service = require('../service/index');
+
+const contactValidation = Joi.defaults(() =>
+    Joi.object({
+        name: Joi.string().pattern(
+            /^([A-ZĄĆĘŁŃÓŚŹŻ]+'?[a-ząćęłńóśźż]+|[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+'?[a-ząćęłńóśźż]+) ([A-ZĄĆĘŁŃÓŚŹŻ]+'?[a-ząćęłńóśźż]+|[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+'?[a-ząćęłńóśźż]+)$/
+        ),
+        email: Joi.string().email(),
+        phone: Joi.string().pattern(
+            /^([+][0-9]{0,4})?[\s]?([(][0-9]{1,3}[)])?[\s]?[0-9]{2,3}[-\s]?[0-9]{2,3}[-\s]?[0-9]{2,4}$/
+        ),
+    })
+);
+
+const schemaRequired = contactValidation
+    .object()
+    .options({ presence: "required" })
+    .required();
+
+const schema = contactValidation.object().or("name", "email", "phone");
+
 
 const getAll =  async (req, res, next) => {
     try {
@@ -57,7 +78,16 @@ const remove = async (req, res, next) => {
 };
 
 const create = async (req, res, next) => {
-    const { name, email, phone} = req.body
+    const { name, email, phone } = req.body
+    const validation = schemaRequired.validate({ name, email, phone });
+        if (validation.error) {
+            res.status(400).json({
+                message: validation.error.details[0].message,
+                code: 400,
+            });
+            return;
+    }
+
     try {
         const result = await service.addContact({ name, email, phone })
 
@@ -75,6 +105,15 @@ const create = async (req, res, next) => {
 const update = async (req, res, next) => {
     const { contactId } = req.params
     const { name, email, phone, favorite } = req.body
+    const validation = schema.validate({ name, email, phone });
+        if (validation.error) {
+            res.status(400).json({
+                message: validation.error.details[0].message,
+                code: 400,
+            });
+            return;
+    }
+
     try {
         const result = await service.updateContact(contactId, { name, email, phone, favorite })
         if (result) {
@@ -100,6 +139,15 @@ const update = async (req, res, next) => {
 const updateStatus = async (req, res, next) => {
     const { contactId } = req.params
     const { isFavourite = false } = req.body
+    const { name, email, phone} = req.body
+    const validation = schemaRequired.validate({ name, email, phone });
+    if (validation.error) {
+        res.status(400).json({
+            message: validation.error.details[0].message,
+            code: 400,
+        });
+        return;
+    }
 
     try {
         const result = await service.updateStatusContact(contactId, { isFavourite })
