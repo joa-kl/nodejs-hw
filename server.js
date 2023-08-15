@@ -28,20 +28,17 @@ const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const contactsRouter = require('./api/index');
+const app = express();
+const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 require('dotenv').config();
 
-const app = express();
-
 app.use(express.json());
 app.use(cors());
-
-const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
-
 app.use(logger(formatsLogger))
 
-const routerApi = require('./api/index');
-app.use('/api/contacts', routerApi);
+app.use('/api/contacts', contactsRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found' })
