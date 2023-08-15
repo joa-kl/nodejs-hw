@@ -10,6 +10,7 @@ const contactValidation = Joi.defaults(() =>
         phone: Joi.string().pattern(
             /^([+][0-9]{0,4})?[\s]?([(][0-9]{1,3}[)])?[\s]?[0-9]{2,3}[-\s]?[0-9]{2,3}[-\s]?[0-9]{2,4}$/
         ),
+        isFavourite: Joi.boolean()
     })
 );
 
@@ -139,8 +140,8 @@ const update = async (req, res, next) => {
 const updateStatus = async (req, res, next) => {
     const { contactId } = req.params
     const { isFavourite = false } = req.body
-    const { name, email, phone} = req.body
-    const validation = schemaRequired.validate({ name, email, phone });
+    // const { name, email, phone} = req.body
+    const validation = schemaRequired.validate({ isFavourite });
     if (validation.error) {
         res.status(400).json({
             message: validation.error.details[0].message,
