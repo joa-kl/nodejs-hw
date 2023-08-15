@@ -51,7 +51,7 @@ const getContact = async (req, res, next) => {
                 status: "Not found",
                 code: 404,
             });
-    }
+        }
     } catch (error) {
         console.error(error);
     }
