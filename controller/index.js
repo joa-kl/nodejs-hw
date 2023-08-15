@@ -10,7 +10,7 @@ const contactValidation = Joi.defaults(() =>
         phone: Joi.string().pattern(
             /^([+][0-9]{0,4})?[\s]?([(][0-9]{1,3}[)])?[\s]?[0-9]{2,3}[-\s]?[0-9]{2,3}[-\s]?[0-9]{2,4}$/
         ),
-        isFavourite: Joi.boolean()
+        favourite: Joi.boolean()
     })
 );
 
@@ -105,7 +105,7 @@ const create = async (req, res, next) => {
 
 const update = async (req, res, next) => {
     const { contactId } = req.params
-    const { name, email, phone, favorite } = req.body
+    const { name, email, phone } = req.body
     const validation = schema.validate({ name, email, phone });
         if (validation.error) {
             res.status(400).json({
@@ -116,7 +116,7 @@ const update = async (req, res, next) => {
     }
 
     try {
-        const result = await service.updateContact(contactId, { name, email, phone, favorite })
+        const result = await service.updateContact(contactId, { name, email, phone })
         if (result) {
             res.json({
                 status: 'success',
@@ -139,9 +139,9 @@ const update = async (req, res, next) => {
 
 const updateStatus = async (req, res, next) => {
     const { contactId } = req.params
-    const { isFavourite = false } = req.body
+    const { favourite = false } = req.body
     // const { name, email, phone} = req.body
-    const validation = schemaRequired.validate({ isFavourite });
+    const validation = schemaRequired.validate({ favourite });
     if (validation.error) {
         res.status(400).json({
             message: validation.error.details[0].message,
@@ -151,7 +151,7 @@ const updateStatus = async (req, res, next) => {
     }
 
     try {
-        const result = await service.updateStatusContact(contactId, { isFavourite })
+        const result = await service.updateStatusContact(contactId, { favourite })
         if (result) {
             res.json({
                 status: 'success',
