@@ -63,7 +63,7 @@ connection
   })
   .catch((error) => {
     console.log(`Server error: ${error.message}`, uriDb);
-    process.exit();
+    process.exit(1);
   }
 )
 
