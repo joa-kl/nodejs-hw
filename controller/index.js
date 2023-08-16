@@ -94,7 +94,7 @@ const remove = async (req, res, next) => {
 
 const create = async (req, res, next) => {
     const { name, email, phone } = req.body
-    const validation = schemaAdd.validate({ name, email, phone });
+    const validation = schemaAdd.validate(req.body);
         if (validation.error) {
             res.status(400).json({
                 message: validation.error.details[0].message,
@@ -120,7 +120,7 @@ const create = async (req, res, next) => {
 const update = async (req, res, next) => {
     const { contactId } = req.params
     const { name, email, phone } = req.body
-    const validation = schemaUpdate.validate({ name, email, phone });
+    const validation = schemaUpdate.validate(req.body);
         if (validation.error) {
             res.status(400).json({
                 message: validation.error.details[0].message,
@@ -154,7 +154,7 @@ const update = async (req, res, next) => {
 const updateStatus = async (req, res, next) => {
     const { contactId } = req.params
     const { favorite = false } = req.body
-    const validation = schemaUpdateFavorite.validate({ favorite });
+    const validation = schemaUpdateFavorite.validate(req.body);
     if (validation.error) {
         res.status(400).json({
             message: validation.error.details[0].message,
@@ -164,7 +164,7 @@ const updateStatus = async (req, res, next) => {
     }
 
     try {
-        const result = await service.updateStatusContact(contactId, req.body, { favorite })
+        const result = await service.updateStatusContact(contactId, req.body)
         if (result) {
             res.json({
                 status: 'success',
