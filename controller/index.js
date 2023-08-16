@@ -132,7 +132,6 @@ const update = async (req, res, next) => {
 
 const updateStatus = async (req, res, next) => {
     const { contactId } = req.params
-    // const { favorite = false } = req.body
     const validation = schemaUpdateFavorite.validate(req.body);
     if (validation.error) {
         res.status(400).json({
