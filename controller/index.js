@@ -15,27 +15,6 @@ const schemaUpdate = Joi.object({
 
 const schemaUpdateFavorite = Joi.object({ favorite: Joi.boolean().required() })
 
-// const contactValidation = Joi.defaults(() =>
-//     Joi.object({
-//         name: Joi.string().pattern(
-//             /^([A-ZĄĆĘŁŃÓŚŹŻ]+'?[a-ząćęłńóśźż]+|[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+'?[a-ząćęłńóśźż]+) ([A-ZĄĆĘŁŃÓŚŹŻ]+'?[a-ząćęłńóśźż]+|[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+'?[a-ząćęłńóśźż]+)$/
-//         ),
-//         email: Joi.string().email(),
-//         phone: Joi.string().pattern(
-//             /^([+][0-9]{0,4})?[\s]?([(][0-9]{1,3}[)])?[\s]?[0-9]{2,3}[-\s]?[0-9]{2,3}[-\s]?[0-9]{2,4}$/
-//         ),
-//         favourite: Joi.boolean()
-//     })
-// );
-
-// const schemaRequired = contactValidation
-//     .object()
-//     .options({ presence: "required" })
-//     .required();
-
-// const schema = contactValidation.object().or("name", "email", "phone");
-
-
 const getAll =  async (req, res, next) => {
     try {
         const results = await service.getAllContacts()
@@ -153,7 +132,7 @@ const update = async (req, res, next) => {
 
 const updateStatus = async (req, res, next) => {
     const { contactId } = req.params
-    const { favorite = false } = req.body
+    // const { favorite = false } = req.body
     const validation = schemaUpdateFavorite.validate(req.body);
     if (validation.error) {
         res.status(400).json({
