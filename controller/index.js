@@ -1,26 +1,19 @@
 const Joi = require('joi');
 const service = require('../service/index');
 
-const contactValidation = Joi.defaults(() =>
-    Joi.object({
-        name: Joi.string().pattern(
-            /^([A-ZĄĆĘŁŃÓŚŹŻ]+'?[a-ząćęłńóśźż]+|[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+'?[a-ząćęłńóśźż]+) ([A-ZĄĆĘŁŃÓŚŹŻ]+'?[a-ząćęłńóśźż]+|[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+'?[a-ząćęłńóśźż]+)$/
-        ),
-        email: Joi.string().email(),
-        phone: Joi.string().pattern(
-            /^([+][0-9]{0,4})?[\s]?([(][0-9]{1,3}[)])?[\s]?[0-9]{2,3}[-\s]?[0-9]{2,3}[-\s]?[0-9]{2,4}$/
-        ),
-        favourite: Joi.boolean()
-    })
-);
+const schemaAdd = Joi.object({
+    name: Joi.string().min(2).trim().required(),
+    email: Joi.string().email({ minDomainSegments: 2 }).trim().required(),
+    phone: Joi.string().trim().required(),
+});
 
-const schemaRequired = contactValidation
-    .object()
-    .options({ presence: "required" })
-    .required();
+const schemaUpdate = Joi.object({
+    name: Joi.string().min(2).trim(),
+    email: Joi.string().email({ minDomainSegments: 2 }).trim(),
+    phone: Joi.string().trim()
+}).min(1);
 
-const schema = contactValidation.object().or("name", "email", "phone");
-
+const schemaUpdateFavorite = Joi.object({ favorite: Joi.boolean().required() })
 
 const getAll =  async (req, res, next) => {
     try {
@@ -80,7 +73,7 @@ const remove = async (req, res, next) => {
 
 const create = async (req, res, next) => {
     const { name, email, phone } = req.body
-    const validation = schemaRequired.validate({ name, email, phone });
+    const validation = schemaAdd.validate(req.body);
         if (validation.error) {
             res.status(400).json({
                 message: validation.error.details[0].message,
@@ -106,7 +99,7 @@ const create = async (req, res, next) => {
 const update = async (req, res, next) => {
     const { contactId } = req.params
     const { name, email, phone } = req.body
-    const validation = schema.validate({ name, email, phone });
+    const validation = schemaUpdate.validate(req.body);
         if (validation.error) {
             res.status(400).json({
                 message: validation.error.details[0].message,
@@ -139,8 +132,7 @@ const update = async (req, res, next) => {
 
 const updateStatus = async (req, res, next) => {
     const { contactId } = req.params
-    const { favourite = false } = req.body
-    const validation = schemaRequired.validate({ favourite });
+    const validation = schemaUpdateFavorite.validate(req.body);
     if (validation.error) {
         res.status(400).json({
             message: validation.error.details[0].message,
@@ -150,12 +142,12 @@ const updateStatus = async (req, res, next) => {
     }
 
     try {
-        const result = await service.updateStatusContact(contactId, { favourite })
+        const result = await service.updateStatusContact(contactId, req.body)
         if (result) {
             res.json({
                 status: 'success',
                 code: 200,
-                data: { contact: result },
+                data: { result },
             })
         } else {
             res.status(404).json({
@@ -166,7 +158,7 @@ const updateStatus = async (req, res, next) => {
             })
         }
     } catch (e) {
-        console.error(e.message = "missing field favorite");
+        console.error("missing field favorite");
         next(e)
     }
 }
