@@ -21,6 +21,14 @@ const schemaRequired = contactValidation
 
 const schema = contactValidation.object().or("name", "email", "phone");
 
+const login = async (req, res, next) => {
+    
+}
+
+const signup = async (req, res, next) => {
+    
+}
+
 
 const getAll =  async (req, res, next) => {
     try {
@@ -173,6 +181,8 @@ const updateStatus = async (req, res, next) => {
 
 
 module.exports = {
+    login,
+    signup,
     getAll,
     getContact,
     remove,
