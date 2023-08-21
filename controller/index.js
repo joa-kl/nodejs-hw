@@ -26,6 +26,7 @@ const schemaRequired = contactValidation
 
 const schema = contactValidation.object().or("name", "email", "phone");
 
+
 const login = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -63,13 +64,12 @@ const signup = async (req, res, next) => {
             status: 'error',
             code: 409,
             message: 'Email is already in use',
-            data: 'Conflict'
-           
+            data: 'Conflict'           
         });
     }
     try {
         const newUser = new User({ username, email });
-        newUser.setPassowrd(password);
+        newUser.setPassword(password);
         await newUser.save();
         res.status(201).json({
             status: 'success',

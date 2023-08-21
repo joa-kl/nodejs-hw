@@ -6,12 +6,15 @@ const contactsRouter = require('./api/index');
 const usersRouter = require('./api/user')
 const app = express();
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
+mongoose.Promise = global.Promise;
 
 require('dotenv').config();
 
 app.use(express.json());
 app.use(cors());
 app.use(logger(formatsLogger))
+
+require('./config/config-passport');
 
 app.use('/api/contacts', contactsRouter);
 app.use('/api/users', usersRouter);
@@ -42,9 +45,6 @@ connection
     process.exit(1);
   }
 )
-
-
-
 
 // _____ DO USUNIĘCIA _______
 

@@ -17,7 +17,7 @@ passport.use(
         User.find({ _id: payload.id })
             .then(([user]) => {
                 if (!user) {
-                    return done(new Error("iser is not here anymore"));
+                    return done(new Error("User is not here anymore"));
                 }
                 return done(null, user)
             })
