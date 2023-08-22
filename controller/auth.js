@@ -34,9 +34,21 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res) => {
     const { _id } = req.user;
-    await User.findByIdAndUpdate(_id, { token: '' });
+    const user = await User.findByIdAndUpdate(_id, { token: '' });
 
-    res.status(204).json();
+    if (!user) {
+        res.status(409).json({
+            status: 'error',
+            code: 409,
+            message: 'User not found',
+        });
+    } else {
+        res.status(201).json({
+            status: 'success',
+            code: 201,
+            message: 'Logout successful',
+        });
+    }
 };
 
 const signup = async (req, res, next) => {
@@ -67,8 +79,19 @@ const signup = async (req, res, next) => {
     }
 }
 
+const getCurrent = async (req, res) => {
+    const { name, email, subscription } = req.user;
+
+    res.json({
+        name,
+        email,
+        subscription,
+    });
+};
+
 module.exports = {
     login,
     logout,
     signup,
+    getCurrent
 }
