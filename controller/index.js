@@ -1,10 +1,5 @@
 const Joi = require('joi');
 const service = require('../service/index');
-const User = require('../service/schemas/user');
-const jwt = require('jsonwebtoken');
-
-require('dotenv').config();
-const secret = process.env.SECRET;
 
 const contactValidation = Joi.defaults(() =>
     Joi.object({
@@ -25,64 +20,6 @@ const schemaRequired = contactValidation
     .required();
 
 const schema = contactValidation.object().or("name", "email", "phone");
-
-
-const login = async (req, res, next) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user || !user.validPassword(password)) {
-        return res.status(409).json({
-            status: 'error',
-            code: 400,
-            message: 'Incorrect login or password',
-            data: 'Bad request'
-        });
-    }
-
-    const payload = {
-        id: user.id,
-        user: user.username,
-    };
-
-    const token = jwt.sign(payload, secret, { expiresIn: '1h' });
-    res.json({
-        status: 'success',
-        code: 200,
-        data: {
-            token,
-        },
-    });
-};
-
-const signup = async (req, res, next) => {
-    const { username, email, password } = req.body;
-    const user = await User.findOne({ email }).lean();
-
-    if (user) {
-        return res.status(409).json({
-            status: 'error',
-            code: 409,
-            message: 'Email is already in use',
-            data: 'Conflict'           
-        });
-    }
-    try {
-        const newUser = new User({ username, email });
-        newUser.setPassword(password);
-        await newUser.save();
-        res.status(201).json({
-            status: 'success',
-            code: 201,
-            data: {
-                message: 'Registration successful',
-            },
-        });
-    } catch (err) {
-        next(err)
-    }
-}
-
 
 const getAll =  async (req, res, next) => {
     try {
@@ -235,8 +172,6 @@ const updateStatus = async (req, res, next) => {
 
 
 module.exports = {
-    login,
-    signup,
     getAll,
     getContact,
     remove,
