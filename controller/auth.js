@@ -32,6 +32,13 @@ const login = async (req, res, next) => {
     });
 };
 
+const logout = async (req, res) => {
+    const { _id } = req.user;
+    await User.findByIdAndUpdate(_id, { token: '' });
+
+    res.status(204).json();
+};
+
 const signup = async (req, res, next) => {
     const { username, email, password } = req.body;
     const user = await User.findOne({ email }).lean();
@@ -62,5 +69,6 @@ const signup = async (req, res, next) => {
 
 module.exports = {
     login,
+    logout,
     signup,
 }
