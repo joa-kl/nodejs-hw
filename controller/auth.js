@@ -67,10 +67,11 @@ const signup = async (req, res, next) => {
         const newUser = new User({ username, email });
         newUser.setPassword(password);
         await newUser.save();
+
         res.status(201).json({
             status: 'success',
             code: 201,
-            data: {
+            data: { 
                 message: 'Registration successful',
             },
         });
