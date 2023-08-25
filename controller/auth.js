@@ -9,7 +9,7 @@ const login = async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (!user || !user.validPassword(password)) {
-        return res.status(409).json({
+        return res.status(400).json({
             status: 'error',
             code: 400,
             message: 'Incorrect login or password',
