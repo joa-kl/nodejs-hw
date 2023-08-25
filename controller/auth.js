@@ -34,21 +34,13 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res) => {
     const { _id } = req.user;
-    const user = await User.findByIdAndUpdate(_id, { token: '' });
+    await User.findByIdAndUpdate(_id, { token: '' });
 
-    if (!user) {
-        res.status(409).json({
-            status: 'error',
-            code: 409,
-            message: 'User not found',
-        });
-    } else {
-        res.status(201).json({
-            status: 'success',
-            code: 201,
-            message: 'Logout successful',
-        });
-    }
+    res.status(201).json({
+        status: 'success',
+        code: 201,
+        message: 'Logout successful',
+    });
 };
 
 const signup = async (req, res, next) => {
