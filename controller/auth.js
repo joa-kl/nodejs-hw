@@ -41,7 +41,7 @@ const logout = async (req, res) => {
         code: 201,
         message: 'Logout successful',
     });
-};
+}; 
 
 const signup = async (req, res, next) => {
     const { username, email, password } = req.body;
