@@ -102,7 +102,7 @@ const uploadAvatar = async (req, res, next) => {
 
     res.json({
         description,
-        message: 'Plik załadowany pomyślnie',
+        message: 'File uploaded successfully',
         status: 200,
     })
 };
