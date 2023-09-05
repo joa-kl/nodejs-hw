@@ -1,10 +1,8 @@
-const createHttpError = require('http-errors');
 const User = require('../service/schemas/user');
 const jwt = require('jsonwebtoken');
 const fs = require('fs').promises;
 const path = require('path');
 const storeImage = path.join(__dirname, '../public');
-const avatarExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff'];
 // const avatarsDir = path.join(__dirname, '../../public/avatars');
 const tempDir = path.join(__dirname, '../../temp');
 
@@ -115,16 +113,7 @@ const updateAvatar = async (req, res) => {
     const { path: tempUpload, originalname } = req.file;
 
     const avatarName = `${_id}_${originalname}`;
-    const fileExtension = originalname.substring(originalname.lastIndexOf('.') + 1);
-
-    if (!avatarExtensions.includes(fileExtension.toLowerCase())) {
-        return createHttpError(
-            400,
-            `${originalname} includes an invalid file extension! Must be: ${avatarExtensions.join(', or ')}`,
-        );
-    }
     const tempImagePath = path.join(tempDir, avatarName);
-    // const resizedImagePath = path.join(avatarsDir, avatarName);
 
     try {
         await fs.stat(tempImagePath);
@@ -132,7 +121,6 @@ const updateAvatar = async (req, res) => {
         await fs.copyFile(tempUpload, tempImagePath);
     }
 
-    // await resizeImage(tempImagePath, resizedImagePath);
     await User.findByIdAndUpdate(_id, { avatarURL: path.join('avatars', avatarName) });
 
     res.json({
