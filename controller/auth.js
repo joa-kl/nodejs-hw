@@ -1,11 +1,13 @@
+const createHttpError = require('http-errors');
 const User = require('../service/schemas/user');
 const jwt = require('jsonwebtoken');
-// const path = require('path');
 const fs = require('fs').promises;
 const path = require('path');
 const storeImage = path.join(__dirname, '../public');
+const avatarExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff'];
+// const avatarsDir = path.join(__dirname, '../../public/avatars');
+const tempDir = path.join(__dirname, '../../temp');
 
-// const storeImage = path.join(process.cwd(), 'images');
 
 require('dotenv').config();
 const secret = process.env.SECRET;
@@ -90,7 +92,7 @@ const getCurrent = async (req, res) => {
 
 const uploadAvatar = async (req, res, next) => {
     const { description } = req.body;
-    const { path: temporaryName,filename } = req.file;
+    const { path: temporaryName, filename } = req.file;
     const fileName = path.join(storeImage, filename);
 
     try {
@@ -105,12 +107,45 @@ const uploadAvatar = async (req, res, next) => {
         message: 'Plik załadowany pomyślnie',
         status: 200,
     })
-}
+};
+
+
+const updateAvatar = async (req, res) => {
+    const { _id } = req.user;
+    const { path: tempUpload, originalname } = req.file;
+
+    const avatarName = `${_id}_${originalname}`;
+    const fileExtension = originalname.substring(originalname.lastIndexOf('.') + 1);
+
+    if (!avatarExtensions.includes(fileExtension.toLowerCase())) {
+        return createHttpError(
+            400,
+            `${originalname} includes an invalid file extension! Must be: ${avatarExtensions.join(', or ')}`,
+        );
+    }
+    const tempImagePath = path.join(tempDir, avatarName);
+    // const resizedImagePath = path.join(avatarsDir, avatarName);
+
+    try {
+        await fs.stat(tempImagePath);
+    } catch (error) {
+        await fs.copyFile(tempUpload, tempImagePath);
+    }
+
+    // await resizeImage(tempImagePath, resizedImagePath);
+    await User.findByIdAndUpdate(_id, { avatarURL: path.join('avatars', avatarName) });
+
+    res.json({
+        avatarURL: path.join('avatars', avatarName),
+    });
+};
+
 
 module.exports = {
     login,
     logout,
     signup,
     getCurrent,
-    uploadAvatar
+    uploadAvatar,
+    updateAvatar
 }

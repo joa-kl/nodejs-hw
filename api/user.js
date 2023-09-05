@@ -15,4 +15,6 @@ router.post('/current', controller.getCurrent);
 
 router.post('/avatars', upload.single('avatar'));
 
+router.patch('/avatars', upload.single('avatar'));
+
 module.exports = router
