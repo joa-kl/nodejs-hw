@@ -3,10 +3,15 @@ const logger = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const contactsRouter = require('./api/index');
-const usersRouter = require('./api/user')
+const usersRouter = require('./api/user');
+const path = require('path');
 const app = express();
+const fs = require('fs').promises;
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 mongoose.Promise = global.Promise;
+
+const storeImage = path.join(__dirname, '../public');
+const uploadDir = path.join(__dirname, '../public/avatar')
 
 require('dotenv').config();
 
@@ -34,9 +39,24 @@ const connection = mongoose.connect(uriDb, {
   useUnifiedTopology: true,
 });
 
+const isAccessible = path => {
+  return fs
+    .access(path)
+    .then(() => true)
+    .catch(() => false);
+};
+
+const createFolderIsNotExist = async folder => {
+  if (!(await isAccessible(folder))) {
+    await fs.mkdir(folder);
+  }
+};
+
 connection
   .then(() => {
     app.listen(3000, () => {
+      createFolderIsNotExist(uploadDir);
+      createFolderIsNotExist(storeImage);
       console.log("Database connection successful");
     })
   })

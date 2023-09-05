@@ -1,5 +1,11 @@
 const User = require('../service/schemas/user');
 const jwt = require('jsonwebtoken');
+// const path = require('path');
+const fs = require('fs').promises;
+const path = require('path');
+const storeImage = path.join(__dirname, '../public');
+
+// const storeImage = path.join(process.cwd(), 'images');
 
 require('dotenv').config();
 const secret = process.env.SECRET;
@@ -82,9 +88,29 @@ const getCurrent = async (req, res) => {
     });
 };
 
+const uploadAvatar = async (req, res, next) => {
+    const { description } = req.body;
+    const { path: temporaryName,filename } = req.file;
+    const fileName = path.join(storeImage, filename);
+
+    try {
+        await fs.rename(temporaryName, fileName);
+    } catch (err) {
+        await fs.unlink(temporaryName);
+        return next(err);
+    }
+
+    res.json({
+        description,
+        message: 'Plik załadowany pomyślnie',
+        status: 200,
+    })
+}
+
 module.exports = {
     login,
     logout,
     signup,
-    getCurrent
+    getCurrent,
+    uploadAvatar
 }
