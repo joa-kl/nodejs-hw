@@ -6,7 +6,7 @@ const multer = require('multer');
 // const storeImage = path.join(process.cwd(), 'images');
 // const storeImage = path.join(__dirname, '../public');
 
-const uploadDir = path.join(__dirname, '../public/avatar')
+const uploadDir = path.join(__dirname, '../tmp')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

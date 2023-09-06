@@ -29,6 +29,9 @@ const login = async (req, res, next) => {
     };
 
     const token = jwt.sign(payload, secret, { expiresIn: '1h' });
+    user.token = token;
+    user.save();
+
     res.json({
         status: 'success',
         code: 200,
