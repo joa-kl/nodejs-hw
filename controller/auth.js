@@ -78,15 +78,36 @@ const signup = async (req, res, next) => {
     }
 }
 
-const getCurrent = async (req, res) => {
-    const { name, email, subscription } = req.user;
+const getCurrent = async (req, res, next) => {
 
-    res.json({
-        name,
-        email,
-        subscription,
-    });
+    try {
+        const user = req.user;
+        if (!user) {
+            return res.status(404).json({
+                status: "not-found",
+                code: 404,
+                message: 'not authorized',
+                data: {
+                    user: req.user,
+                },
+                
+            });
+        }
+        return res.json({
+            status: "success",
+            code: 200,
+            data: {
+                user: req.user,
+            },
+        
+        });
+        
+    } catch (e) {
+        console.error(e);
+        next(e);
+    }
 };
+
 
 const uploadAvatar = async (req, res, next) => {
     const { description } = req.body;
