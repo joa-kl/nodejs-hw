@@ -133,8 +133,8 @@ const uploadAvatar = async (req, res, next) => {
 };
 
 const updateAvatar = async (req, res, next) => {
-    const { email } = req.body
-    const user = await User.findOne({ email });
+  
+    const user = await User.findOne({ email: req.user.email});
     const { path: temporaryName, filename } = req.file;
     const avatarURL = path.join("public/avatar", filename);
 
