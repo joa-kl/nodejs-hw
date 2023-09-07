@@ -3,8 +3,6 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs').promises;
 const path = require('path');
 const storeImage = path.join(__dirname, '../public');
-// const avatarsDir = path.join(__dirname, '../../public/avatars');
-// const tempDir = path.join(__dirname, '../../tmp');
 const Jimp = require("jimp")
 
 

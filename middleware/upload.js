@@ -1,11 +1,6 @@
 const path = require('path');
 const multer = require('multer');
 
-// const createHttpError = require('http-errors');
-// const uploadDir = path.join(process.cwd(), 'uploads');
-// const storeImage = path.join(process.cwd(), 'images');
-// const storeImage = path.join(__dirname, '../public');
-
 const uploadDir = path.join(__dirname, '../tmp')
 
 const storage = multer.diskStorage({
