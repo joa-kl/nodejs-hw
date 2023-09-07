@@ -4,7 +4,8 @@ const fs = require('fs').promises;
 const path = require('path');
 const storeImage = path.join(__dirname, '../public');
 // const avatarsDir = path.join(__dirname, '../../public/avatars');
-const tempDir = path.join(__dirname, '../../tmp');
+// const tempDir = path.join(__dirname, '../../tmp');
+const Jimp = require("jimp")
 
 
 require('dotenv').config();
@@ -131,26 +132,31 @@ const uploadAvatar = async (req, res, next) => {
     })
 };
 
+const updateAvatar = async (req, res, next) => {
+    const { email } = req.body
+    const user = await User.findOne({ email });
+    const { path: temporaryName, filename } = req.file;
+    const avatarURL = path.join("public/avatar", filename);
 
-const updateAvatar = async (req, res) => {
-    const { _id } = req.user;
-    const { path: tempUpload, originalname } = req.file;
-
-    const avatarName = `${_id}_${originalname}`;
-    const tempImagePath = path.join(tempDir, avatarName);
+    Jimp.read(temporaryName)
+        .then((avatar) => {
+            return avatar
+                .resize(250, 250)
+                .write("public/avatar");
+        })
+        .catch((err) => {
+            console.error(err);
+        });
 
     try {
-        await fs.stat(tempImagePath);
-    } catch (error) {
-        await fs.copyFile(tempUpload, tempImagePath);
+        await fs.rename(temporaryName, avatarURL);
+        user.avatarURL = avatarURL;
+        user.save()
+    } catch (e) {
+        return next(e);
     }
-
-    await User.findByIdAndUpdate(_id, { avatarURL: path.join('avatars', avatarName) });
-
-    res.json({
-        avatarURL: path.join('avatars', avatarName),
-    });
-};
+    res.status(200).json({ avatarURL: avatarURL });
+}
 
 
 module.exports = {

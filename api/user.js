@@ -12,8 +12,6 @@ router.get('/logout', auth, controller.logout);
 
 router.get('/current', auth, controller.getCurrent);
 
-// router.post('/avatars', upload.single('avatar'));
-
-router.patch('/avatars',  upload.single('avatar'), controller.uploadAvatar);
+router.patch('/avatars', upload.single('avatar'), controller.updateAvatar);
 
 module.exports = router
