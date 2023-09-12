@@ -3,11 +3,17 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs').promises;
 const path = require('path');
 const storeImage = path.join(__dirname, '../public');
-const Jimp = require("jimp")
+const Jimp = require("jimp");
+const bcryptjs = require('bcryptjs');
+const gravatar = require('gravatar');
+const { v4: uuidv4 } = require('uuid');
+// const nodemailer = require('nodemailer');
+const { sendEmail } = require('../helpers/sendEmail');
 
 
 require('dotenv').config();
 const secret = process.env.SECRET;
+// const BASE_URL = process.env.BASE_URL
 
 const login = async (req, res, next) => {
     const { email, password } = req.body;
@@ -51,57 +57,58 @@ const logout = async (req, res) => {
     });
 }; 
 
-const signup = async (req, res, next) => {
-    const { username, email, password } = req.body;
-    const user = await User.findOne({ email }).lean();
+const signup = async (req, res) => {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    const hashPassword = await bcryptjs.hash(password, 10);
+    const avatarUrl = gravatar.url(email);
+    const verificationToken = uuidv4();
+    const BASE_URL = process.env.BASE_URL;
 
     if (user) {
-        return res.status(409).json({
+        res.status(409).json({
             status: 'error',
             code: 409,
             message: 'Email is already in use',
             data: 'Conflict'
         });
     }
-    try {
-        const newUser = new User({ username, email });
-        newUser.setPassword(password);
-        await newUser.save();
 
-        res.status(201).json({
-            status: 'success',
-            code: 201,
-            data: { 
-                message: 'Registration successful',
-            },
-        });
-    } catch (err) {
-        next(err)
-    }
+
+    const newUser = await User.create({
+        ...req.body,
+        password: hashPassword,
+        avatarUrl,
+        verificationToken,
+    });
+
+ 
+    const verifyEmail = {
+        to: email,
+        subject: 'Verify email',
+        html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click to verify email</a>`,
+    }; 
+
+    await sendEmail(verifyEmail);;
+
+    res.status(201).json({
+        name: newUser.name,
+        email: newUser.email,
+        avatar: newUser.avatarUrl,
+    });
+
 }
+
 
 const getCurrent = async (req, res, next) => {
 
     try {
-        const user = req.user;
-        if (!user) {
-            return res.status(404).json({
-                status: "not-found",
-                code: 404,
-                message: 'not authorized',
-                data: {
-                    user: req.user,
-                },
-                
-            });
-        }
         return res.json({
             status: "success",
             code: 200,
             data: {
                 user: req.user,
             },
-        
         });
         
     } catch (e) {
@@ -153,7 +160,36 @@ const updateAvatar = async (req, res, next) => {
     } catch (e) {
         return next(e);
     }
+
     res.status(200).json({ avatarURL: avatarURL });
+}
+
+const verifyEmail = async (req, res) => {
+    const { verificationToken } = req.params;
+    const user = await User.findOne({ verificationToken });
+
+    if (!user) {
+        return res.status(404).json({
+            status: "Not Found",
+            code: 404,
+            message: 'User not found',
+        })
+    }
+
+    await User.findByIdAndUpdate(user._id, {
+        verify: true,
+        verificationToken: "",
+    });
+
+    res.json({
+        status: 'success',
+        code: 200,
+        message: "Verification successful"
+    })
+}
+
+const resendVerifyEmail = async (res, req) => {
+    
 }
 
 
@@ -163,5 +199,7 @@ module.exports = {
     signup,
     getCurrent,
     uploadAvatar,
-    updateAvatar
+    updateAvatar,
+    verifyEmail,
+    resendVerifyEmail
 }
