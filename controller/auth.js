@@ -8,7 +8,9 @@ const bcryptjs = require('bcryptjs');
 const gravatar = require('gravatar');
 const { v4: uuidv4 } = require('uuid');
 // const nodemailer = require('nodemailer');
-const { sendEmail } = require('../helpers/sendEmail');
+// const { sendEmail } = require('../helpers/sendEmail');
+const { send } = require('./sendEmail');
+
 
 
 require('dotenv').config();
@@ -60,10 +62,6 @@ const logout = async (req, res) => {
 const signup = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    const hashPassword = await bcryptjs.hash(password, 10);
-    const avatarUrl = gravatar.url(email);
-    const verificationToken = uuidv4();
-    const BASE_URL = process.env.BASE_URL;
 
     if (user) {
         res.status(409).json({
@@ -74,6 +72,10 @@ const signup = async (req, res) => {
         });
     }
 
+    const hashPassword = await bcryptjs.hash(password, 10);
+    const avatarUrl = gravatar.url(email);
+    const verificationToken = uuidv4();
+    const BASE_URL = process.env.BASE_URL;
 
     const newUser = await User.create({
         ...req.body,
@@ -89,7 +91,7 @@ const signup = async (req, res) => {
         html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click to verify email</a>`,
     }; 
 
-    await sendEmail(verifyEmail);;
+    await send(verifyEmail);
 
     res.status(201).json({
         name: newUser.name,
