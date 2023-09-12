@@ -1,4 +1,4 @@
-const User = require('../service/schemas/user');
+const { User } = require('../service/schemas/user');
 const jwt = require('jsonwebtoken');
 const fs = require('fs').promises;
 const path = require('path');
@@ -7,22 +7,21 @@ const Jimp = require("jimp");
 const bcryptjs = require('bcryptjs');
 const gravatar = require('gravatar');
 const { v4: uuidv4 } = require('uuid');
-// const nodemailer = require('nodemailer');
-// const { sendEmail } = require('../helpers/sendEmail');
-const { send } = require('./sendEmail');
+const { sendEmail } = require('../helpers/sendEmail');
+const createError = require('http-errors');
 
 
-
-require('dotenv').config();
+require('dotenv').config()
 const secret = process.env.SECRET;
-// const BASE_URL = process.env.BASE_URL
+const BASE_URL = process.env.BASE_URL;
+
 
 const login = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
 
     if (!user || !user.validPassword(password)) {
-        return res.status(400).json({
+        return res.json({
             status: 'error',
             code: 400,
             message: 'Incorrect login or password',
@@ -75,7 +74,7 @@ const signup = async (req, res) => {
     const hashPassword = await bcryptjs.hash(password, 10);
     const avatarUrl = gravatar.url(email);
     const verificationToken = uuidv4();
-    const BASE_URL = process.env.BASE_URL;
+  
 
     const newUser = await User.create({
         ...req.body,
@@ -87,11 +86,11 @@ const signup = async (req, res) => {
  
     const verifyEmail = {
         to: email,
-        subject: 'Verify email',
-        html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click to verify email</a>`,
+        subject: 'Registration - verify email',
+        html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${newUser.verificationToken}">Click to verify email</a>`,
     }; 
 
-    await send(verifyEmail);
+    await sendEmail(verifyEmail);
 
     res.status(201).json({
         name: newUser.name,
@@ -191,8 +190,29 @@ const verifyEmail = async (req, res) => {
 }
 
 const resendVerifyEmail = async (res, req) => {
-    
-}
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        return createError(401, 'User not found');
+    }
+
+    if (user.verify) {
+        createError(400, 'Verification has already been passed');
+    }
+
+    const verifyEmail = {
+        to: email,
+        subject: 'Verify email',
+        html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${user.verificationToken}">Click to verify email</a>`,
+    };
+
+    await sendEmail(verifyEmail);
+
+    res.json({
+        message: 'Verification email sent',
+    });
+};
 
 
 module.exports = {
