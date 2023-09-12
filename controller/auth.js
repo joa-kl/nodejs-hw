@@ -189,7 +189,7 @@ const verifyEmail = async (req, res) => {
     })
 }
 
-const resendVerifyEmail = async (res, req) => {
+const resendVerifyEmail = async (req, res) => {
     const { email } = req.body;
     const user = await User.findOne({ email });
 
@@ -198,7 +198,7 @@ const resendVerifyEmail = async (res, req) => {
     }
 
     if (user.verify) {
-        createError(400, 'Verification has already been passed');
+        return createError(400, 'Verification has already been passed');
     }
 
     const verifyEmail = {

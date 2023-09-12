@@ -5,7 +5,6 @@ const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 
 const config = {
-    // pool: true,
     host: 'smtp-relay.brevo.com',
     port: 587,
     secure: false,

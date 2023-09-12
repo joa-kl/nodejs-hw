@@ -1,7 +1,6 @@
 const passport = require('passport');
 
 require('dotenv').config();
-// const secret = process.env.SECRET;
 
 const auth = async (req, res, next) => {
     const { authorization = "" } = req.headers;
