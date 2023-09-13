@@ -8,7 +8,6 @@ const bcryptjs = require('bcryptjs');
 const gravatar = require('gravatar');
 const { v4: uuidv4 } = require('uuid');
 const { sendEmail } = require('../helpers/sendEmail');
-const createError = require('http-errors');
 
 
 require('dotenv').config()
@@ -179,7 +178,7 @@ const verifyEmail = async (req, res) => {
 
     await User.findByIdAndUpdate(user._id, {
         verify: true,
-        verificationToken: "",
+        verificationToken,
     });
 
     res.json({
@@ -189,16 +188,24 @@ const verifyEmail = async (req, res) => {
     })
 }
 
-const resendVerifyEmail = async (req, res) => {
+const resendVerifyEmail = async(req, res) => {
     const { email } = req.body;
     const user = await User.findOne({ email });
 
     if (!user) {
-        return createError(401, 'User not found');
+        res.json({
+            status: 'not found',
+            code: 200,
+            message: "not found - verification"
+        })
     }
 
     if (user.verify) {
-        return createError(400, 'Verification has already been passed');
+        res.json({
+            status: 'success',
+            code: 200,
+            message: "Verification successful- verifcation"
+        })
     }
 
     const verifyEmail = {
