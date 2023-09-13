@@ -196,7 +196,7 @@ const resendVerifyEmail = async(req, res) => {
         res.json({
             status: 'not found',
             code: 200,
-            message: "not found - verification"
+            message: "not found"
         })
     }
 
@@ -204,7 +204,7 @@ const resendVerifyEmail = async(req, res) => {
         res.json({
             status: 'success',
             code: 200,
-            message: "Verification successful- verifcation"
+            message: "Verification successful"
         })
     }
 
